@@ -15,9 +15,12 @@ import tifffile
 import os
 import pandas as pd
 
-folder_in = "/home/aurelienb/Documents/Projects/collaborations/Dimitri/csp -/crops/"
-folder_out = "/home/aurelienb/Documents/Projects/collaborations/Dimitri/csp -/results/"
+folder_in = "to_process/"
+folder_out = "results/"
 
+if not os.path.isdir(folder_in):
+    os.mkdir(folder_in)
+    
 if not os.path.isdir(folder_out):
     os.mkdir(folder_out)
     
