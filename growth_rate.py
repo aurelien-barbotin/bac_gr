@@ -13,6 +13,8 @@ from scipy.optimize import curve_fit
 import glob
 import tifffile
 import os
+import sys
+
 import pandas as pd
 
 folder_in = "to_process/"
@@ -24,7 +26,7 @@ if not os.path.isdir(folder_in):
 if not os.path.isdir(folder_out):
     os.mkdir(folder_out)
     
-files = glob.glob(folder_in+"*.tif")
+files = glob.glob(folder_in+"*.tif*")
 
 names = [w.split(os.sep)[-1] for w in files]
 
@@ -38,9 +40,16 @@ all_out = {"filename":[],
            "doubling time (exp. fit)":[],
            "doubling time (ratio)":[]}
 
+subfolder=input("Please enter output folder name:\n")
+
+if os.path.isdir(subfolder):
+    print("The filename already exists, please specify another one")
+    sys.exit(0)
+os.mkdir(folder_out+subfolder+"/")
+
 for j in range(len(files)):
     name = files[j].split(os.sep)[-1].split('.')[0]
-    out_name = folder_out+name
+    out_name = folder_out+subfolder+"/"+name
     stack = tifffile.imread(files[j])
     
     counts = []
@@ -85,7 +94,7 @@ for j in range(len(files)):
     plt.ylabel('Relative growth')
     plt.suptitle('Doubling time {:.2f} frames'.format(t_double))
     plt.tight_layout()
-    plt.savefig(folder_out+name+'_summary.png')
+    plt.savefig(out_name+'_summary.png')
     plt.close()
     
     
@@ -95,8 +104,8 @@ for j in range(len(files)):
               }
     
     df = pd.DataFrame(data=out_dict)
-    df.to_csv(out_name+"_results.csv")
-    print('Doubling time {:.2f}'.format(t_double))
+    df.to_excel(out_name+"_results.xlsx")
+    print('Doubling time {}: {:.2f}'.format(name, t_double))
 
 all_out_df = pd.DataFrame(all_out)
-all_out_df.to_csv(folder_out+'doubling_times.csv')
+all_out_df.to_excel(folder_out+subfolder+"/"'doubling_times.xlsx')
