@@ -1,0 +1,5 @@
+matplotlib
+tifffile
+pyinstaller
+pandas
+openpyxl

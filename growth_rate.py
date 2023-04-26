@@ -29,12 +29,9 @@ def main():
         
     files = glob.glob(folder_in+"*.tif*")
     
-    names = [w.split(os.sep)[-1] for w in files]
-    
     def expf(t,tau):
         return np.exp(t/tau)
     
-    file = files[0]
     dt = 1 # frames
     
     all_out = {"filename":[],
@@ -59,7 +56,7 @@ def main():
             count = np.count_nonzero(im>im.min())
             counts.append(count)
         counts = np.asarray(counts).astype(float)
-        counts/=np.mean(counts[0])
+        counts/=stack[0].size
         
         try:
             t_double_ratio = stack.shape[0]*np.log(2)/np.log(counts[-1]/counts[0])
@@ -69,7 +66,7 @@ def main():
         
         xt = np.arange(len(counts))*dt
         try:
-            popt, _ = curve_fit(expf,xt,counts,p0 = (t_double_ratio))
+            popt, _ = curve_fit(expf,xt,counts/counts[0],p0 = (t_double_ratio))
         except:
             popt = [1]
             
@@ -88,7 +85,7 @@ def main():
         plt.imshow(stack[-1])
         plt.title('Mask, last frame')
         plt.subplot(133)
-        plt.plot(xt, counts,'-o',label='fit')
+        plt.plot(xt, counts/counts[0],'-o',label='fit')
         plt.plot(xt,yh,'k--',label='data')
         plt.legend()
         plt.xlabel('time (frames)')
@@ -100,7 +97,8 @@ def main():
         
         
         out_dict={"frame": xt,
-                  "relative growth": counts,
+                  "cell fraction": counts,
+                  "relative growth": counts/counts[0],
                   "exponential fit": yh
                   }
         
@@ -110,6 +108,7 @@ def main():
     
     all_out_df = pd.DataFrame(all_out)
     all_out_df.to_excel(folder_out+subfolder+"/"'doubling_times.xlsx')
-
+    print('Done')
+    
 if __name__=='__main__':
     main()
