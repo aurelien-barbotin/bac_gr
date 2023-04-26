@@ -15,3 +15,10 @@ Two outputs are generated per stack:
 * a png file, showing in order the first, last frame of the stack and the fitted growth curve
 * a csv file containing the raw growth curve
  A final csv file is generated, "doubling_time.csv" that contains the doubling time calculated both from an exponential fit and by calculating the ratio between the number of segmented pixels in the first and in the last frame.
+
+Install
+-------
+The command to install it using pyinstaller is:
+
+	pyinstaller growth_rate.py --onefile --name measure_growth --console --hidden-import='PIL._tkinter_finder' --noconfirm
+
